@@ -2,5 +2,23 @@
     <string name="app_name">Mealnipulator</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="Monday">Monday</string>
+    <string name="Tuesday">Tuesday</string>
+    <string name="Wednesday">Wednesday</string>
+    <string name="Thursday">Thursday</string>
+    <string name="Friday">Friday</string>
+    <string name="Saturday">Saturday</string>
+    <string name="Sunday">Sunday</string>
+    <string name="MealPlan">MealPlan</string>
+    <string name="ShoppingList">ShoppingList</string>
+    <string name="NoRecipe">First we need recipes! Would you like to create some?</string>
+    <string name="Yes">Yes!</string>
+    <string name="NotToday">No, Thanks.</string>
+
+
+        <string-array name="defaultRecipe">
+            <item>Ice Cream!</item>
+        </string-array>
+
+
 </resources>
