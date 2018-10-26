@@ -3,13 +3,19 @@ package com.bonehill.mealnipulate
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.view.Menu
+import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.support.v4.startActivity
+
 class MainActivity : AppCompatActivity () {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(toolbar)
+
 
         val pageradapter = MainAdapter(supportFragmentManager,this)
         pager.adapter=pageradapter;
@@ -30,5 +36,21 @@ class MainActivity : AppCompatActivity () {
         })
 
 
+    }
+
+   override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.toolmenu, menu)
+
+       toolbar.setOnMenuItemClickListener { item: MenuItem? ->
+
+           when (item!!.itemId) {
+               R.id.addRecipe -> {
+                   startActivity<recipeActivity>()
+               }
+           }
+           true
+       }
+        return true
     }
 }

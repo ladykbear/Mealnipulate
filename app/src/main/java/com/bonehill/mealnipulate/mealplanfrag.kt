@@ -13,6 +13,9 @@ import android.widget.Spinner
 
 
 import kotlinx.android.synthetic.main.fragment_mealplanfrag.*
+import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.support.v4.startActivity
+import org.jetbrains.anko.yesButton
 
 class mealplanfrag : Fragment() {
 
@@ -89,27 +92,18 @@ class mealplanfrag : Fragment() {
             spinSun.adapter = adapter
         }
 
+
+
         if(lstRecipes.size==0)
         {
-            val builder = AlertDialog.Builder(context)
-            builder.setTitle("No Recipes!")
-            builder.setMessage("Would you like to enter some recipes?")
-            // Set a positive button and its click listener on alert dialog
-            builder.setPositiveButton("YES"){dialog, which ->
-                // Do something when user press the positive button
+            alert("Would you like to add some recipes?", "No Recipes!") {
+                yesButton { startActivity<recipeActivity>()  }
 
-            }
-
-            // Display a negative button on alert dialog
-            builder.setNegativeButton("No"){dialog,which ->
-
-            }
-
-            val dialog: AlertDialog = builder.create()
-            dialog.show()
+            }.show()
         }
 
     }
+
 
     companion object {
         fun newInstance(): mealplanfrag = mealplanfrag()
