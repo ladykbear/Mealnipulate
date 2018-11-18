@@ -14,11 +14,18 @@
     <string name="NoRecipe">First we need recipes! Would you like to create some?</string>
     <string name="Yes">Yes!</string>
     <string name="NotToday">No, Thanks.</string>
+    <string name="AddRecipe">Update Recipes</string>
+    <string name="NewRecipe">New Recipe</string>
+    <string name="RecipeName">Recipe Name</string>
+    <string name="EnterOne">Enter one ingredient per line</string>
 
 
     <string-array name="defaultRecipe">
         <item>Ice Cream!</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>
