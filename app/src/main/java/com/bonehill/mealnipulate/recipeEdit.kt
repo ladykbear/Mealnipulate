@@ -7,6 +7,13 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
+import kotlinx.android.synthetic.main.fragment_recipe_edit.*
+import kotlinx.android.synthetic.main.fragment_recipe_edit.view.*
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.support.v4.alert
+import org.jetbrains.anko.yesButton
+import java.lang.Exception
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -24,8 +31,9 @@ import android.view.ViewGroup
  */
 class recipeEdit : Fragment() {
     // TODO: Rename and change types of parameters
-    private var name: String? = null
-
+    private var name=""
+    private var ingreds= arrayListOf<String>()
+    private var lvAdapter:IngredAdapter?=null;
     private var listener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +47,65 @@ class recipeEdit : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recipe_edit, container, false)
+        val parentView=inflater.inflate(R.layout.fragment_recipe_edit, container, false)
+
+        parentView.btnAdd.setOnClickListener{addClick()}
+        parentView.edIngredient.requestFocus()
+
+        lvAdapter = IngredAdapter(context, ingreds)
+        parentView.lvIngreds.adapter = lvAdapter
+        parentView.lvIngreds.onItemClickListener= AdapterView.OnItemClickListener { adapterView, view, position, id ->
+            removeIngred(position)
+        }
+
+        return parentView
     }
 
+    fun removeIngred(pos:Int)
+    {
+        alert("Remove ingredient?", "Wait!") {
+            yesButton { try {
+
+                ingreds.removeAt(pos)
+                lvAdapter!!.notifyDataSetChanged()
+            }
+            catch( ex:Exception)
+            {
+
+            } }
+
+            noButton { } }.show()
+
+    }
+    fun addIngred(ingred:String)
+    {
+        try {
+            ingreds.add(ingred)
+            lvAdapter!!.notifyDataSetChanged()
+            edIngredient.text.clear()
+        }
+        catch( ex:Exception)
+        {
+
+        }
+    }
+    fun addClick()
+    {
+
+        //check atleast 1 ingredient
+        if(edIngredient.text.isEmpty()) {
+            alert("Add an ingredient!", "Wait!") {
+                yesButton { "Ok" } }.show()
+
+            edIngredient.requestFocus()
+            return
+        }
+
+        addIngred(edIngredient.text.toString())
+
+        //save recipe and go back to recipe list
+
+    }
     // TODO: Rename method, update argument and hook method into UI event
     fun onButtonPressed(uri: Uri) {
         listener?.onFragmentInteraction(uri)
@@ -88,5 +152,60 @@ class recipeEdit : Fragment() {
 
                     }
                 }
+    }
+
+    inner class IngredAdapter : BaseAdapter {
+
+        private var ingredList = ArrayList<String>()
+        private var context: Context? = null
+
+        constructor(context: Context?, notesList: ArrayList<String>) : super() {
+            this.ingredList = notesList
+            this.context = context
+        }
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+
+            val view: View?
+            val vh: ViewHolder
+
+            if (convertView == null) {
+                view = layoutInflater.inflate(R.layout.ingredient_item, parent, false)
+                vh = ViewHolder(view)
+                view.tag = vh
+              //  Log.i("JSA", "set Tag for ViewHolder, position: " + position)
+            } else {
+                view = convertView
+                vh = view.tag as ViewHolder
+            }
+
+           vh.txItem.text=ingredList.get(position)
+
+
+            return view
+        }
+
+        override fun getItem(position: Int): Any {
+            return ingredList[position]
+        }
+
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        override fun getCount(): Int {
+            return ingredList.size
+        }
+    }
+
+    private class ViewHolder(view: View?) {
+        val btnRemove: ImageView
+        val txItem: TextView
+
+        init {
+            this.btnRemove = view?.findViewById(R.id.btnRemove) as ImageView
+            this.txItem = view?.findViewById(R.id.txItem) as TextView
+        }
+
     }
 }
