@@ -4,16 +4,19 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import kotlinx.android.synthetic.main.fragment_recipe_edit.*
 import kotlinx.android.synthetic.main.fragment_recipe_edit.view.*
-import org.jetbrains.anko.noButton
+import org.jetbrains.anko.*
+import org.jetbrains.anko.support.v4.UI
 import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.yesButton
+
+
 import java.lang.Exception
+import com.google.gson.Gson
+
+
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -42,6 +45,55 @@ class recipeEdit : Fragment() {
             name = it.getString("NAME", "")
 
         }
+        setHasOptionsMenu(true);
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.recipeedit, menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        when (item!!.itemId) {
+            R.id.updateRecipe -> {
+
+                if(ingreds.size==0)
+                {
+                    alert("Your recipe has no ingredients!", "Wait!") {
+                        cancelButton { "Ok" } }.show()
+                    return false
+                }
+
+                alert {
+                    title = "Recipe Name"
+                    customView {
+
+                        verticalLayout {
+                            val rn = editText { }
+                            positiveButton("Save") {
+                                saveRecipe(rn.text.toString())
+                            }
+                        }
+                        cancelButton { }
+                    }
+
+                }.show()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    fun saveRecipe( name:String)
+    {
+        var recipe=Recipe()
+        recipe.Name=name
+        recipe.Ingredients=ingreds
+
+        val gson = Gson()
+        val json = gson.toJson(recipe)
+
+        alert(json, "JSON!") {
+            cancelButton { "Ok" } }.show()
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -95,7 +147,7 @@ class recipeEdit : Fragment() {
         //check atleast 1 ingredient
         if(edIngredient.text.isEmpty()) {
             alert("Add an ingredient!", "Wait!") {
-                yesButton { "Ok" } }.show()
+                cancelButton { "Ok" } }.show()
 
             edIngredient.requestFocus()
             return

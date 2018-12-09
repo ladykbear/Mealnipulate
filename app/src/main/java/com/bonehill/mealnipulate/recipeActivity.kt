@@ -21,21 +21,6 @@ class recipeActivity : AppCompatActivity() {
         getSupportActionBar()!!.setDisplayShowHomeEnabled(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.toolmenu, menu)
-
-        toolbar.setOnMenuItemClickListener { item: MenuItem? ->
-
-            when (item!!.itemId) {
-                R.id.newRecipe -> {
-                    startActivity<recipeActivity>()
-                }
-            }
-            true
-        }
-        return true
-    }
 
     companion object {
 

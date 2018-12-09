@@ -20,6 +20,7 @@
     <string name="EnterOne">Enter one ingredient per line</string>
     <string name="Add">Add</string>
     <string name="Ingredient">Ingredient</string>
+    <string name="Save">Save</string>
 
 
     <string-array name="defaultRecipe">

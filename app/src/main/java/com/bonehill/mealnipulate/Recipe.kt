@@ -2,14 +2,14 @@ package com.bonehill.mealnipulate
 
 class Recipe()
 {
-    var recipeName=""
-    var recipeIngredients= arrayListOf<String>()
+    var Name=""
+    var Ingredients= arrayListOf<String>()
 
     fun updateIngredients(newList:ArrayList<String>){
-        recipeIngredients=newList
+        Ingredients=newList
     }
     fun updateName(name:String)
     {
-        recipeName=name;
+        Name=name;
     }
 }
