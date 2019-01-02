@@ -6,9 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".recipeEdit">
 
-    <!-- TODO: Update blank fragment layout -->
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -23,10 +20,21 @@
             android:orientation="horizontal">
 
             <EditText
+                android:id="@+id/edAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".10"
+                android:ellipsize="end"
+                android:hint="1"
+                android:inputType="number"
+                android:maxLines="1"
+                android:layout_margin="2dp"/>
+
+            <EditText
                 android:id="@+id/edIngredient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight=".80"
                 android:ellipsize="end"
                 android:hint="@string/Ingredient"
                 android:inputType="textPersonName"
@@ -35,9 +43,9 @@
 
             <ImageButton
                 android:id="@+id/btnAdd"
+                android:layout_weight=".10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0"
                 android:src="@android:drawable/ic_input_add" />
 
         </LinearLayout>

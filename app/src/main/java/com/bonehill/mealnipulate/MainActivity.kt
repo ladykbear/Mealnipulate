@@ -11,11 +11,13 @@ import org.jetbrains.anko.support.v4.startActivity
 
 class MainActivity : AppCompatActivity () {
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        Utils.loadRecipes(this)
 
         val pageradapter = MainAdapter(supportFragmentManager,this)
         pager.adapter=pageradapter;

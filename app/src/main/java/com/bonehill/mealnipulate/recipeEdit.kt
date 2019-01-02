@@ -9,14 +9,15 @@ import android.widget.*
 import kotlinx.android.synthetic.main.fragment_recipe_edit.*
 import kotlinx.android.synthetic.main.fragment_recipe_edit.view.*
 import org.jetbrains.anko.*
-import org.jetbrains.anko.support.v4.UI
 import org.jetbrains.anko.support.v4.alert
 
 
 import java.lang.Exception
 import com.google.gson.Gson
-
-
+import org.jetbrains.anko.support.v4.startActivity
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -35,7 +36,7 @@ import com.google.gson.Gson
 class recipeEdit : Fragment() {
     // TODO: Rename and change types of parameters
     private var name=""
-    private var ingreds= arrayListOf<String>()
+    private var ingreds= arrayListOf<Ingredient>()
     private var lvAdapter:IngredAdapter?=null;
     private var listener: OnFragmentInteractionListener? = null
 
@@ -82,17 +83,32 @@ class recipeEdit : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    fun loadRecipe(name:String)
+    {
+        val file = File(Utils.getDataDir(context, "Recipes"), name)
+        val inputAsString = FileInputStream(file).bufferedReader().use { it.readText() }
+
+        alert(inputAsString, "JSON!") {
+            cancelButton { "Ok" } }.show()
+
+    }
+
     fun saveRecipe( name:String)
     {
-        var recipe=Recipe()
-        recipe.Name=name
-        recipe.Ingredients=ingreds
+        var recipe=Recipe(name, ingreds)
 
         val gson = Gson()
-        val json = gson.toJson(recipe)
+        val jsonString = gson.toJson(recipe)
 
-        alert(json, "JSON!") {
-            cancelButton { "Ok" } }.show()
+
+        val file = File(Utils.getDataDir(context, "Recipes"), name)
+        FileOutputStream(file).use {
+            it.write(jsonString.toByteArray())
+        }
+        Utils.loadRecipes(context)
+       /* alert(jsonString, "JSON!") {
+            cancelButton { "Ok" } }.show()*/
+        startActivity<recipeActivity>()
 
     }
 
@@ -101,7 +117,7 @@ class recipeEdit : Fragment() {
         // Inflate the layout for this fragment
         val parentView=inflater.inflate(R.layout.fragment_recipe_edit, container, false)
 
-        parentView.btnAdd.setOnClickListener{addClick()}
+        parentView.btnAdd.setOnClickListener{clickAdd()}
         parentView.edIngredient.requestFocus()
 
         lvAdapter = IngredAdapter(context, ingreds)
@@ -129,19 +145,21 @@ class recipeEdit : Fragment() {
             noButton { } }.show()
 
     }
-    fun addIngred(ingred:String)
+    fun addIngred(ingred:String, cnt:Int)
     {
         try {
-            ingreds.add(ingred)
+            ingreds.add(Ingredient(ingred, cnt))
             lvAdapter!!.notifyDataSetChanged()
             edIngredient.text.clear()
+            edAmount.text.clear()
+
         }
         catch( ex:Exception)
         {
 
         }
     }
-    fun addClick()
+    fun clickAdd()
     {
 
         //check atleast 1 ingredient
@@ -152,10 +170,11 @@ class recipeEdit : Fragment() {
             edIngredient.requestFocus()
             return
         }
+        var cnt="1";
+        if(!edAmount.text.isEmpty())
+            cnt=edAmount.text.toString()
+        addIngred(edIngredient.text.toString(), (cnt).toInt())
 
-        addIngred(edIngredient.text.toString())
-
-        //save recipe and go back to recipe list
 
     }
     // TODO: Rename method, update argument and hook method into UI event
@@ -194,8 +213,6 @@ class recipeEdit : Fragment() {
     }
 
     companion object {
-
-
         @JvmStatic
         fun newInstance(name: String) =
                 recipeEdit().apply {
@@ -208,10 +225,10 @@ class recipeEdit : Fragment() {
 
     inner class IngredAdapter : BaseAdapter {
 
-        private var ingredList = ArrayList<String>()
+        private var ingredList = arrayListOf<Ingredient>()
         private var context: Context? = null
 
-        constructor(context: Context?, notesList: ArrayList<String>) : super() {
+        constructor(context: Context?, notesList:ArrayList<Ingredient>) : super() {
             this.ingredList = notesList
             this.context = context
         }
@@ -230,9 +247,10 @@ class recipeEdit : Fragment() {
                 view = convertView
                 vh = view.tag as ViewHolder
             }
-
-           vh.txItem.text=ingredList.get(position)
-
+            if(ingredList.get(position).Cnt>1)
+                vh.txItem.text=ingredList.get(position).Cnt.toString()+" "+ingredList.get(position).Name
+            else
+                vh.txItem.text=ingredList.get(position).Name
 
             return view
         }
