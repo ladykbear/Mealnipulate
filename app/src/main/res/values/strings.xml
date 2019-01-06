@@ -14,7 +14,7 @@
     <string name="NoRecipe">First we need recipes! Would you like to create some?</string>
     <string name="Yes">Yes!</string>
     <string name="NotToday">No, Thanks.</string>
-    <string name="AddRecipe">Update Recipes</string>
+    <string name="ManageRecipes">Manage Recipes</string>
     <string name="NewRecipe">New Recipe</string>
     <string name="RecipeName">Recipe Name</string>
     <string name="EnterOne">Enter one ingredient per line</string>

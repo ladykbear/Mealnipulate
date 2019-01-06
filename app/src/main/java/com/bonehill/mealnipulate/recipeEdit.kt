@@ -1,6 +1,8 @@
 package com.bonehill.mealnipulate
 
+import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -14,6 +16,7 @@ import org.jetbrains.anko.support.v4.alert
 
 import java.lang.Exception
 import com.google.gson.Gson
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.support.v4.startActivity
 import java.io.File
 import java.io.FileInputStream
@@ -55,6 +58,7 @@ class recipeEdit : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.recipeedit, menu)
     }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
         when (item!!.itemId) {
@@ -67,20 +71,46 @@ class recipeEdit : Fragment() {
                     return false
                 }
                 val oldname=recipename
-                alert {
+                val myalert=alert {
                     title = "Recipe Name"
                     customView {
 
                         verticalLayout {
                             val rn = editText(oldname) { }
+                            val err= textView{
+                                text="Duplicate Name!"
+                                textColor = Color.RED
+                                visibility=View.GONE
+                               }
                             positiveButton("Save") {
-                                saveRecipe(rn.text.toString(), oldname)
-                            }
+
+                                    var found=false;
+                                    for(r:String in Utils.RecipeList)
+                                    {
+                                        if(r.equals(rn.text.toString()))
+                                            found=true;
+                                    }
+                                    if(found) {
+                                        err.visibility = View.VISIBLE
+                                        rn.requestFocus()
+                                        //need to figure out how to check this and stop the dialog closing
+
+                                    }
+                                    else
+                                        saveRecipe(rn.text.toString(), oldname)
+                                }
+
+
+
                         }
                         cancelButton { }
                     }
 
                 }.show()
+                (myalert as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+                        .setOnClickListener{
+                          //  doSomeFunction()
+                        }
             }
         }
         return super.onOptionsItemSelected(item)
@@ -159,7 +189,20 @@ class recipeEdit : Fragment() {
     fun addIngred(ingred:String, cnt:Int)
     {
         try {
-            ingreds.add(Ingredient(ingred, cnt))
+            //check for dups and just increment count for them
+            var found=false
+            for(i:Ingredient in ingreds)
+            {
+                if(i.item.equals(ingred))
+                {
+                    i.count++;
+                    found=true
+                break;
+                }
+            }
+            if(!found)
+                ingreds.add(Ingredient(ingred, cnt))
+
             lvAdapter!!.notifyDataSetChanged()
             edIngredient.text.clear()
             edAmount.text.clear()

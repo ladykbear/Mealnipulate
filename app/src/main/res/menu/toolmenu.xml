@@ -7,5 +7,5 @@
 
     <item
         android:id="@+id/addRecipe"
-        android:title="@string/AddRecipe" />
+        android:title="@string/ManageRecipes" />
 </menu>
