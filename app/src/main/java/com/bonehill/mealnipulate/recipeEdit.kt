@@ -279,7 +279,7 @@ class recipeEdit : Fragment() {
         }
     }
 
-    private class ViewHolder(view: View?) {
+    inner class ViewHolder(view: View?) {
         val btnRemove: ImageView
         val txItem: TextView
 

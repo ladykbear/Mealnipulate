@@ -4,19 +4,16 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 
 import kotlinx.android.synthetic.main.fragment_recipe_list.view.*
-import org.jetbrains.anko.noButton
+import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.startActivity
-import org.jetbrains.anko.yesButton
 import java.io.File
 import java.lang.Exception
 
@@ -37,6 +34,7 @@ class recipeListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
 
     }
 
@@ -91,6 +89,20 @@ class recipeListFragment : Fragment() {
         } else {
           //  throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
         }
+    }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.recipemenu, menu)
+    }
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        when (item!!.itemId) {
+            R.id.newRecipe -> {
+                val parent = activity as recipeActivity?
+                parent?.EditRecipe("")
+
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDetach() {
@@ -150,7 +162,8 @@ class recipeListFragment : Fragment() {
         // TODO: Update argument type and name
         fun onFragmentInteraction(uri: Uri)
     }
-    private class ViewHolder(view: View?) {
+
+    inner class ViewHolder(view: View?) {
         val btnRemove: ImageView
         val txItem: TextView
 
@@ -160,6 +173,8 @@ class recipeListFragment : Fragment() {
         }
 
     }
+
+
     companion object {
 
         @JvmStatic
