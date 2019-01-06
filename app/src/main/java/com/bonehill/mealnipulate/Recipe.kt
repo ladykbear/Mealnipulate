@@ -1,11 +1,6 @@
 package com.bonehill.mealnipulate
 
-class Recipe(name: String, ingredients: ArrayList<String>)
+data class Recipe(val name: String,val ingredients: ArrayList<Ingredient>)
 {
-    var recipeName=name
-    var recipeIngredients=ingredients;
 
-    fun updateIngredients(newList:ArrayList<String>){
-        recipeIngredients=newList
-    }
 }
