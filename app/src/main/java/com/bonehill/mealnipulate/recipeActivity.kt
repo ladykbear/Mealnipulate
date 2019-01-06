@@ -17,8 +17,8 @@ class recipeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_recipe)
 
         setSupportActionBar(toolbar)
-        getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true)
-        getSupportActionBar()!!.setDisplayShowHomeEnabled(true)
+        //getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true)
+        //getSupportActionBar()!!.setDisplayShowHomeEnabled(true)
 
         val fragmentTransaction = fragmentManager.beginTransaction()
         if(Utils.RecipeList.count()==0)
@@ -44,7 +44,7 @@ class recipeActivity : AppCompatActivity() {
     {
         val fragmentTransaction = fragmentManager.beginTransaction()
         val fragment = recipeEdit.newInstance(name)
-        fragmentTransaction.replace(R.id.recipefragment, fragment)
+        fragmentTransaction.replace(R.id.recipefragment, fragment).addToBackStack(null)
         fragmentTransaction.commit()
     }
 

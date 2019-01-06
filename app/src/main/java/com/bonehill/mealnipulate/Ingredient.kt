@@ -1,7 +1,6 @@
 package com.bonehill.mealnipulate
 
-class Ingredient(item:String, count:Int)
+data class Ingredient(val item:String, val count:Int)
 {
-    val Name=item
-    val Cnt=count
+
 }

@@ -35,18 +35,21 @@ import java.io.FileOutputStream
  */
 class recipeEdit : Fragment() {
     // TODO: Rename and change types of parameters
-    private var name=""
+    private var recipename=""
     private var ingreds= arrayListOf<Ingredient>()
-    private var lvAdapter:IngredAdapter?=null;
+    private var lvAdapter:IngredAdapter?=null
     private var listener: OnFragmentInteractionListener? = null
-
+    private var editRecipe:Recipe?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            name = it.getString("NAME", "")
+            recipename = it.getString("NAME", "")
 
         }
-        setHasOptionsMenu(true);
+        if(!recipename.isEmpty())
+            editRecipe=loadRecipe(recipename)
+        setHasOptionsMenu(true)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -60,18 +63,18 @@ class recipeEdit : Fragment() {
                 if(ingreds.size==0)
                 {
                     alert("Your recipe has no ingredients!", "Wait!") {
-                        cancelButton { "Ok" } }.show()
+                        cancelButton() {  } }.show()
                     return false
                 }
-
+                val oldname=recipename
                 alert {
                     title = "Recipe Name"
                     customView {
 
                         verticalLayout {
-                            val rn = editText { }
+                            val rn = editText(oldname) { }
                             positiveButton("Save") {
-                                saveRecipe(rn.text.toString())
+                                saveRecipe(rn.text.toString(), oldname)
                             }
                         }
                         cancelButton { }
@@ -83,19 +86,20 @@ class recipeEdit : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun loadRecipe(name:String)
+    fun loadRecipe(name:String):Recipe
     {
         val file = File(Utils.getDataDir(context, "Recipes"), name)
         val inputAsString = FileInputStream(file).bufferedReader().use { it.readText() }
+        val gson = Gson()
+        val recipe:Recipe=gson.fromJson(inputAsString, Recipe::class.java)
+            ingreds=recipe.ingredients
 
-        alert(inputAsString, "JSON!") {
-            cancelButton { "Ok" } }.show()
-
+        return recipe
     }
 
-    fun saveRecipe( name:String)
+    fun saveRecipe( name:String, oldname:String)
     {
-        var recipe=Recipe(name, ingreds)
+        val recipe=Recipe(name, ingreds)
 
         val gson = Gson()
         val jsonString = gson.toJson(recipe)
@@ -105,6 +109,13 @@ class recipeEdit : Fragment() {
         FileOutputStream(file).use {
             it.write(jsonString.toByteArray())
         }
+        if(!name.equals(oldname))
+        {
+            //delete file for old name
+            val oldfile = File(Utils.getDataDir(context, "Recipes"), oldname)
+            oldfile.delete()
+        }
+
         Utils.loadRecipes(context)
        /* alert(jsonString, "JSON!") {
             cancelButton { "Ok" } }.show()*/
@@ -165,12 +176,12 @@ class recipeEdit : Fragment() {
         //check atleast 1 ingredient
         if(edIngredient.text.isEmpty()) {
             alert("Add an ingredient!", "Wait!") {
-                cancelButton { "Ok" } }.show()
+                cancelButton { } }.show()
 
             edIngredient.requestFocus()
             return
         }
-        var cnt="1";
+        var cnt="1"
         if(!edAmount.text.isEmpty())
             cnt=edAmount.text.toString()
         addIngred(edIngredient.text.toString(), (cnt).toInt())
@@ -247,10 +258,10 @@ class recipeEdit : Fragment() {
                 view = convertView
                 vh = view.tag as ViewHolder
             }
-            if(ingredList.get(position).Cnt>1)
-                vh.txItem.text=ingredList.get(position).Cnt.toString()+" "+ingredList.get(position).Name
+            if(ingredList.get(position).count>1)
+                vh.txItem.text=ingredList.get(position).count.toString()+" "+ingredList.get(position).item
             else
-                vh.txItem.text=ingredList.get(position).Name
+                vh.txItem.text=ingredList.get(position).item
 
             return view
         }
@@ -274,7 +285,7 @@ class recipeEdit : Fragment() {
 
         init {
             this.btnRemove = view?.findViewById(R.id.btnRemove) as ImageView
-            this.txItem = view?.findViewById(R.id.txItem) as TextView
+            this.txItem = view.findViewById(R.id.txItem) as TextView
         }
 
     }
