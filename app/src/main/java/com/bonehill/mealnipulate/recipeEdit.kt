@@ -16,6 +16,7 @@ import org.jetbrains.anko.support.v4.alert
 
 import java.lang.Exception
 import com.google.gson.Gson
+import org.jetbrains.anko.appcompat.v7.Appcompat
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.support.v4.startActivity
 import java.io.File
@@ -59,6 +60,43 @@ class recipeEdit : Fragment() {
         inflater.inflate(R.menu.recipeedit, menu)
     }
 
+    fun popsaveDialog(oldname:String):Boolean
+    {
+        var foundDup=false;
+        alert {
+            title = "Recipe Name"
+            customView {
+
+                verticalLayout {
+                    val rn = editText(oldname) { }
+
+                    positiveButton("Save") {
+
+                        for(r:String in Utils.RecipeList)
+                        {
+                            if(r.equals(rn.text.toString()))
+                                foundDup=true;
+                        }
+                        if(!foundDup)
+                            saveRecipe(rn.text.toString(), oldname)
+                        else
+                        {
+                                dupNameAlert(rn.text.toString())
+
+                        }
+
+                    }
+
+
+
+                }
+                cancelButton { }
+            }
+
+        }.show()
+
+        return foundDup
+    }
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
 
         when (item!!.itemId) {
@@ -71,49 +109,20 @@ class recipeEdit : Fragment() {
                     return false
                 }
                 val oldname=recipename
-                val myalert=alert {
-                    title = "Recipe Name"
-                    customView {
+                popsaveDialog(oldname)
 
-                        verticalLayout {
-                            val rn = editText(oldname) { }
-                            val err= textView{
-                                text="Duplicate Name!"
-                                textColor = Color.RED
-                                visibility=View.GONE
-                               }
-                            positiveButton("Save") {
-
-                                    var found=false;
-                                    for(r:String in Utils.RecipeList)
-                                    {
-                                        if(r.equals(rn.text.toString()))
-                                            found=true;
-                                    }
-                                    if(found) {
-                                        err.visibility = View.VISIBLE
-                                        rn.requestFocus()
-                                        //need to figure out how to check this and stop the dialog closing
-
-                                    }
-                                    else
-                                        saveRecipe(rn.text.toString(), oldname)
-                                }
-
-
-
-                        }
-                        cancelButton { }
-                    }
-
-                }.show()
-                (myalert as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
-                        .setOnClickListener{
-                          //  doSomeFunction()
-                        }
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun dupNameAlert(name:String) {
+        alert("Duplicate Recipe Name!", "Oh no!") {
+            positiveButton("Ok") {
+
+                popsaveDialog(name)
+            }
+        }.show()
     }
 
     fun loadRecipe(name:String):Recipe
