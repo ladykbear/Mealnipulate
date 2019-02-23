@@ -17,7 +17,6 @@ class MainActivity : AppCompatActivity () {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        Utils.loadRecipes(this)
 
         val pageradapter = MainAdapter(supportFragmentManager,this)
         pager.adapter=pageradapter;
@@ -40,6 +39,11 @@ class MainActivity : AppCompatActivity () {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        Utils.loadRecipes(this)
+
+    }
    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.toolmenu, menu)

@@ -29,18 +29,28 @@ class mealplanfrag : Fragment() {
     val GO_OUT:String="Go Out"
     val LEFT_OVERS:String="Left Overs"
     val lstMeals= hashMapOf<String, String>()
-
+    var dropDownList= arrayListOf<String>()
     var week= arrayListOf<String>("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    override fun onResume() {
+        super.onResume()
+        createDropDownDataList();
+    }
+    private fun createDropDownDataList()
+    {
+        dropDownList.clear()
+        dropDownList.addAll(Utils.RecipeList)
+        dropDownList.add(0, LEFT_OVERS)
+        dropDownList.add(GO_OUT)
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val v= inflater.inflate(R.layout.fragment_mealplanfrag, container, false);
        // return inflater.inflate(R.layout.fragment_mealplanfrag, container, false)
-        val dropDownList= arrayListOf<String>()
-        dropDownList.addAll(Utils.RecipeList)
-        dropDownList.add(0, LEFT_OVERS)
-        dropDownList.add(GO_OUT)
-        val arrayAdapter = ArrayAdapter<String>(context, R.layout.recipe_spinner_item, dropDownList)
+       // val dropDownList= arrayListOf<String>()
 
+
+        val arrayAdapter = ArrayAdapter<String>(context, R.layout.recipe_spinner_item, dropDownList)
+        arrayAdapter.setNotifyOnChange(true)
         var llparams : LinearLayout.LayoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, // This will define text view width
                 LinearLayout.LayoutParams.WRAP_CONTENT
