@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.FragmentManager
 import android.view.Menu
 import android.view.MenuItem
 
@@ -12,15 +13,15 @@ import org.jetbrains.anko.startActivity
 
 class recipeActivity : AppCompatActivity() {
     val fragmentManager = supportFragmentManager
+    //private val BACK_STACK_ROOT_TAG = "root_fragment"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recipe)
 
         setSupportActionBar(toolbar)
-        //getSupportActionBar()!!.setDisplayHomeAsUpEnabled(true)
-        //getSupportActionBar()!!.setDisplayShowHomeEnabled(true)
 
         val fragmentTransaction = fragmentManager.beginTransaction()
+
         if(Utils.RecipeList.count()==0)
         {
             //if arriving to this activity with 0 on list->go straight to edit to add recipes
@@ -31,7 +32,7 @@ class recipeActivity : AppCompatActivity() {
         }
         else
         {
-            val fragment = recipeListFragment()
+            val fragment = recipeListFragment.newInstance()
             fragmentTransaction.add(R.id.recipefragment, fragment)
             fragmentTransaction.commit()
         }
@@ -44,7 +45,7 @@ class recipeActivity : AppCompatActivity() {
     {
         val fragmentTransaction = fragmentManager.beginTransaction()
         val fragment = recipeEdit.newInstance(name)
-        fragmentTransaction.replace(R.id.recipefragment, fragment).addToBackStack(null)
+        fragmentTransaction.replace(R.id.recipefragment, fragment)
         fragmentTransaction.commit()
     }
 

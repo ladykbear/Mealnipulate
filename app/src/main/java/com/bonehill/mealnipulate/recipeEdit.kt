@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
 import android.view.*
 import android.widget.*
 import kotlinx.android.synthetic.main.fragment_recipe_edit.*
@@ -44,6 +45,7 @@ class recipeEdit : Fragment() {
     private var lvAdapter:IngredAdapter?=null
     private var listener: OnFragmentInteractionListener? = null
     private var editRecipe:Recipe?=null
+    private var currentIdx=-1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -52,6 +54,8 @@ class recipeEdit : Fragment() {
         }
         if(!recipename.isEmpty())
             editRecipe=loadRecipe(recipename)
+
+        currentIdx=Utils.RecipeList.indexOf(recipename)
         setHasOptionsMenu(true)
 
     }
@@ -60,30 +64,43 @@ class recipeEdit : Fragment() {
         inflater.inflate(R.menu.recipeedit, menu)
     }
 
-    fun popsaveDialog(oldname:String):Boolean
+    fun popsaveDialog():Boolean
     {
         var foundDup=false;
+        var currentRecipeName=""
+        if(currentIdx>=0)
+            currentRecipeName=Utils.RecipeList.get(currentIdx)
+
         alert {
             title = "Recipe Name"
             customView {
 
                 verticalLayout {
-                    val rn = editText(oldname) { }
+                    val rn = editText(currentRecipeName) { }
 
                     positiveButton("Save") {
 
-                        for(r:String in Utils.RecipeList)
-                        {
-                            if(r.equals(rn.text.toString()))
-                                foundDup=true;
-                        }
-                        if(!foundDup)
-                            saveRecipe(rn.text.toString(), oldname)
-                        else
-                        {
-                                dupNameAlert(rn.text.toString())
 
-                        }
+                            //edit recipe
+                            //check for dup name
+                            for(r:String in Utils.RecipeList)
+                            {
+                                //don't compare to itself
+                                if(Utils.RecipeList.indexOf(r)==currentIdx)
+                                    continue
+                                if(r.equals(rn.text.toString()))
+                                    foundDup=true;
+
+                            }
+                            if(!foundDup)
+                                saveRecipe(rn.text.toString())
+                            else
+                            {
+                                dupNameAlert()
+
+                            }
+
+
 
                     }
 
@@ -108,19 +125,19 @@ class recipeEdit : Fragment() {
                         cancelButton() {  } }.show()
                     return false
                 }
-                val oldname=recipename
-                popsaveDialog(oldname)
+
+                popsaveDialog()
 
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    fun dupNameAlert(name:String) {
+    fun dupNameAlert() {
         alert("Duplicate Recipe Name!", "Oh no!") {
             positiveButton("Ok") {
 
-                popsaveDialog(name)
+                popsaveDialog()
             }
         }.show()
     }
@@ -136,29 +153,34 @@ class recipeEdit : Fragment() {
         return recipe
     }
 
-    fun saveRecipe( name:String, oldname:String)
+    fun saveRecipe( name:String)
     {
         val recipe=Recipe(name, ingreds)
 
         val gson = Gson()
         val jsonString = gson.toJson(recipe)
 
-
         val file = File(Utils.getDataDir(context, "Recipes"), name)
         FileOutputStream(file).use {
             it.write(jsonString.toByteArray())
         }
-        if(!name.equals(oldname))
+
+        if(currentIdx>-1 )//for update check if the name changed and get rid of the json under the old name
         {
-            //delete file for old name
-            val oldfile = File(Utils.getDataDir(context, "Recipes"), oldname)
-            oldfile.delete()
+            val oldname=Utils.RecipeList.get(currentIdx)
+             if(!oldname.equals(name)) {
+                 //delete file for old name
+                 val oldfile = File(Utils.getDataDir(context, "Recipes"), oldname)
+                 oldfile.delete()
+             }
         }
 
+        //reload list
         Utils.loadRecipes(context)
-       /* alert(jsonString, "JSON!") {
-            cancelButton { "Ok" } }.show()*/
-        startActivity<recipeActivity>()
+        val fragmentTransaction = fragmentManager?.beginTransaction()
+        val fragment = recipeListFragment.newInstance()
+        fragmentTransaction?.replace(R.id.recipefragment, fragment)
+        fragmentTransaction?.commit()
 
     }
 
